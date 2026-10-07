@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jigsaw Puzzle Game Instructions</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="logo/android-chrome-512x512.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comfortaa', cursive;
+            background-color: #000;
+            color: #e0e0e0;
+        }
+
+        /* PORTAL SAFE WRAPPER */
+        .portal-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* BACKGROUND LAYER */
+        .page-background {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 650px;
+
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(40, 40, 40, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,10 Q50,0 70,10 L90,30 Q100,50 90,70 L70,90 Q50,100 30,90 L10,70 Q0,50 10,30 Z" fill="rgba(60, 60, 60, 0.3)" /></svg>');
+
+            background-size: cover, 100px 100px;
+            background-position: center, center;
+            background-repeat: no-repeat, repeat;
+            animation: backgroundShift 30s linear infinite;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+        }
+
+        @keyframes backgroundShift {
+            from {
+                background-position: center, 0 0;
+            }
+
+            to {
+                background-position: center, 100px 100px;
+            }
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            background-color: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        h1 {
+            color: #bb86fc;
+            text-align: center;
+            font-size: 2.2em;
+        }
+
+        .instruction,
+        .tip {
+            background-color: rgba(50, 50, 50, 0.7);
+            border-left: 5px solid #03dac6;
+            padding: 10px 15px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9em;
+        }
+
+        .tip {
+            border-left-color: #cf6679;
+        }
+
+        .checkbox-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button {
+            background-color: #13da8e;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            align-self: center;
+        }
+
+        button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+
+        /* MODAL — iframe safe */
+        .modal-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #333;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+
+        /* LANDSCAPE WARNING — iframe safe */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            .portal-wrapper::before {
+                content: "Please rotate your device to portrait mode 📱";
+                position: absolute;
+                inset: 0;
+                background: black;
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1024px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 15px;
+                max-height: 90%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .instruction,
+            .tip {
+                font-size: 0.85em;
+                padding: 8px 10px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+
+        /* --- Landscape Warning for Phones --- */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            body::before {
+                content: "Please rotate your device to portrait mode 📱";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 1);
+                color: #fff;
+                font-size: 1.4rem;
+                font-family: 'Comfortaa', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                z-index: 99999;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+
+    <script>
+        "use strict";
+        !function () {
+            function detectDevTool(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    consoleCheck();
+                }
+            }
+            window.addEventListener('load', detectDevTool);
+            ['resize', 'mousemove', 'focus', 'blur', 'keydown', 'contextmenu', 'scroll', 'mousedown', 'mouseup']
+                .forEach(evt => window.addEventListener(evt, detectDevTool));
+        }();
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "F12" || (e.ctrlKey && (e.key === "u" || e.key === "s" || e.key === "i" || e.key === "c"))) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("copy", e => e.preventDefault());
+        document.addEventListener("paste", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        function consoleCheck() {
+            document.body.innerHTML =
+                '<div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#000;color:#00bfff;text-align:center;"><h1>⚠️ Access Denied</h1><p>Please refresh to continue without using Developer Tools.</p></div>';
+        }
+
+        function startGame() {
+            window.location.href = "../../../welcome.html";
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="portal-wrapper">
+        <div class="page-background">
+            <div class="container">
+                <h1>Jigsaw Puzzle Game</h1>
+
+                <div class="instruction">
+                    <h2>Getting Started</h2>
+                    <ol>
+                        <li>Open the game to see a scrambled image divided into pieces.</li>
+                        <li>Your task is to arrange the pieces to reconstruct the original image.</li>
+                    </ol>
+                </div>
+
+                <div class="instruction">
+                    <h2>Playing the Game</h2>
+                    <ol>
+                        <li>Drag and drop puzzle pieces to rearrange them.</li>
+                        <li>Answer the pop-up questions correctly to progress.</li>
+                        <li>Connect matching pieces by placing them next to each other.</li>
+                        <li>Continue until the image is completed.</li>
+                    </ol>
+                </div>
+
+                <div class="tip">
+                    <h2>Tips for Success</h2>
+                    <ul>
+                        <li>Start with the edges to create a frame.</li>
+                        <li>Group similar colors or patterns together.</li>
+                        <li>Pay attention to the connectors' shapes.</li>
+                        <li>Take breaks if you're stuck to get a fresh perspective.</li>
+                    </ul>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="understood">
+                    <label for="understood">I have read and understood the instructions</label>
+                </div>
+
+                <button id="startGame" disabled>Start Game</button>
+            </div>
+
+            <!-- Modal Overlay for Alerts -->
+            <div class="modal-overlay" id="modal">
+                <div class="modal-content">
+                    <p id="modalMessage"></p>
+                    <button id="closeModal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to external JS file -->
+    <script>
+        const checkbox = document.getElementById('understood');
+        const startButton = document.getElementById('startGame');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modalMessage');
+        const closeModal = document.getElementById('closeModal');
+
+        // Enable or disable the Start Game button based on checkbox
+        checkbox.addEventListener('change', function () {
+            startButton.disabled = !this.checked;
+        });
+
+        // Redirect to the play page when Start Game is clicked
+        startButton.addEventListener('click', function () {
+            window.location.href = 'play/start.html';
+        });
+
+        // Close the modal
+        closeModal.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        // Function to show the modal with a message
+        function showModal(message) {
+            modalMessage.textContent = message;
+            modal.style.display = 'block';
+        }
+
+        // Show a random tip every 30 seconds
+        setInterval(function () {
+            const tips = [
+                "Take your time and enjoy the puzzle-solving process!",
+                "Group puzzle pieces by color or pattern before starting.",
+                "If you're stuck, focus on a smaller section of the image.",
+                "The more you solve, the better you'll get!"
+            ];
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            showModal("Puzzle Tip: " + randomTip);
+        }, 30000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+The objective of this game is to engage children in learning about climate change through an enjoyable and interactive medium. By combining the challenge of solving a jigsaw puzzle with quiz-based learning, the game encourages players to explore environmental issues, understand the impacts of climate change and develop awareness of their responsibility towards nature. 

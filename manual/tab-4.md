@@ -1,0 +1,1 @@
+Introduces players to the causes and effects of climate change in a relatable and visual manner. The puzzle structure sustains curiosity, while quiz questions reinforce understanding of scientific facts.

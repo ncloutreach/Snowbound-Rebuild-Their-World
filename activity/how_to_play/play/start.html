@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowbound: Rebuild Their World</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo/android-chrome-192x192.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comfortaa', sans-serif;
+            background: #000;
+            color: #fff;
+        }
+
+        /* ===== PORTAL SAFE WRAPPER ===== */
+        .portal-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        /* ===== ANIMATED BACKGROUND PANEL ===== */
+        .background-panel {
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 20px;
+            padding: 40px 20px;
+
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #00a896);
+            background-size: 400% 400%;
+            animation: gradientFlow 12s ease infinite;
+
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .content {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            text-shadow: 0 0 20px rgba(0, 255, 200, 0.8);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            animation: fadeIn 1.8s ease;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #d0f0e0;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            animation: fadeIn 2.3s ease;
+        }
+
+        img {
+            width: 85%;
+            max-width: 750px;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 255, 200, 0.3);
+            animation: float 4s ease-in-out infinite, fadeIn 2.5s ease;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button {
+            margin-top: 35px;
+            padding: 14px 50px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ffcc;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffcc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        button:hover {
+            background: #00ffcc;
+            color: #000;
+            transform: scale(1.08);
+            box-shadow: 0 0 40px #00ffcc;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            img { width: 90%; }
+            button {
+                font-size: 18px;
+                padding: 12px 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.7rem; }
+            h2 { font-size: 1rem; }
+        }
+    </style>
+
+    <!-- ===== CLEANED DEV-TOOLS PROTECTION ===== -->
+    <script>
+        function consoleCheck() {
+            document.body.innerHTML =
+                '<div style="display:flex;justify-content:center;align-items:center;height:100%;font-family:sans-serif;background:#000;color:#00ffcc;text-align:center;padding:20px;"><h2>⚠️ Developer Tools Disabled</h2></div>';
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && ["u", "s", "i", "c"].includes(e.key.toLowerCase()))
+            ) {
+                e.preventDefault();
+                consoleCheck();
+            }
+        });
+
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("copy", e => e.preventDefault());
+        document.addEventListener("paste", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+    </script>
+</head>
+
+<body>
+    <div class="portal-wrapper">
+        <div class="background-panel">
+            <div class="content">
+                <h1>Snowbound: Rebuild Their World</h1>
+                <h2>Save Mother Earth</h2>
+                <img src="assets/Front.jpg" alt="Game Preview">
+                <button onclick="startGame()">Start</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startGame() {
+            window.location.href = "play.html";
+        }
+    </script>
+</body>
+
+</html>

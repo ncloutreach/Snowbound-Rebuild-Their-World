@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jigsaw Puzzle</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="logo/android-chrome-512x512.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+
+    <style>
+        /* Body Styling */
+        body {
+            font-family: 'Comfortaa';
+            line-height: 1.6;
+            color: #e0e0e0;
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            padding-top: 10px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(40, 40, 40, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,10 Q50,0 70,10 L90,30 Q100,50 90,70 L70,90 Q50,100 30,90 L10,70 Q0,50 10,30 Z" fill="rgba(60, 60, 60, 0.3)" /></svg>');
+            background-size: cover, 100px 100px;
+            background-position: center, center;
+            background-repeat: no-repeat, repeat;
+            animation: backgroundShift 30s linear infinite;
+            overflow: hidden;
+        }
+
+        .portal-scale {
+            width: 100%;
+            max-width: 1100px;
+            /* prevents stretching */
+            margin: 0 auto;
+            transform-origin: top center;
+        }
+
+        @keyframes backgroundShift {
+            0% {
+                background-position: center, 0 0;
+            }
+
+            100% {
+                background-position: center, 100px 100px;
+            }
+        }
+
+        h1 {
+            color: white;
+            /* Change text color */
+            margin-bottom: -25px;
+            /* Spacing below the title */
+            margin-top: 10px;
+            font-family: Comfortaa;
+            font-size: 50px;
+        }
+
+        h2 {
+            position: absolute;
+            top: 90px;
+            right: 8px;
+            font-size: 2em !important;
+            margin-bottom: 4px;
+        }
+
+        /* === Side-by-Side Layout for Desktop === */
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            /* Space between board and pieces */
+            margin-top: 60px;
+            flex-wrap: wrap;
+            /* In case the screen is narrower */
+        }
+
+        #board {
+            width: 420px;
+            height: 404px;
+            border: 2px solid transparent;
+
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #board img {
+            width: 79px;
+            height: 79px;
+            border: 0.5px solid lightblue;
+        }
+
+
+        #pieces {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* same as board */
+            grid-template-rows: repeat(5, 1fr);
+            gap: 1px;
+            width: 410px;
+            /* match board width */
+            height: 404px;
+            /* match board height */
+            border: 2px solid transparent;
+            margin: 0 auto;
+            align-items: center;
+            justify-items: center;
+        }
+
+        #pieces img {
+            width: 79px;
+            height: 79px;
+            border: 0.5px solid lightblue;
+        }
+
+        /* Overlay to disable board interaction */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black */
+            backdrop-filter: blur(8px);
+            /* Modern blur effect */
+            z-index: 10;
+            /* Above all other content */
+            opacity: 0;
+            /* Initial hidden state for fade-in */
+            transition: opacity 0.5s ease;
+            /* Smooth fade-in transition */
+        }
+
+        /* Question box styles */
+        .question-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            /* Initial smaller scale for animation */
+            width: 400px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            /* Rounded corners */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* Soft shadow for modern look */
+            z-index: 11;
+            /* Above the overlay */
+            text-align: center;
+            opacity: 0;
+            /* Initial hidden state for fade-in */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            /* Smooth zoom and fade-in transition */
+        }
+
+        #question-section h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #333;
+        }
+
+
+        /* Options button styling */
+        #options button {
+            margin: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #6200ea;
+            /* Modern purple background */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Comfortaa', Arial, Helvetica, sans-serif;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            /* Hover effects */
+        }
+
+        #options button:hover {
+            background-color: #4b00b5;
+            /* Darker on hover */
+            transform: translateY(-3px);
+            /* Subtle lift on hover */
+        }
+
+        #options button:active {
+            transform: scale(0.95);
+            /* Shrink on click */
+        }
+
+        /* Explanation text */
+        #explanation {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.5;
+            display: none;
+        }
+
+        /* New Fact Box Styles */
+        /* New Fact Box Styles */
+        #fact-box {
+            width: 100%;
+            overflow: hidden;
+            /* Hide overflow */
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            font-family: 'Comfortaa', sans-serif;
+        }
+
+        #fact-text {
+            display: inline-block;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            font-size: 18px;
+            padding-left: 100%;
+            /* Start off-screen */
+            animation: scrollFacts 15s linear infinite;
+            /* Scroll animation */
+        }
+
+        /* Scroll animation from right to left */
+        @keyframes scrollFacts {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* --- Timer Display --- */
+        /* === Timer (top-left corner, all views) === */
+        #timer {
+            position: fixed;
+            top: 90px;
+            left: 10px;
+            font-size: 20px;
+            padding: 3px 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Close Button Styling */
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            z-index: 1001;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        #close-btn:hover {
+            color: #ff3333 !important;
+            transform: rotate(90deg) scale(1.2);
+        }
+
+        #explanation {
+            margin-top: 24px;
+            font-size: 18px;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #fffbe6, #fff3cd);
+            border-left: 6px solid #ffca28;
+            padding: 16px 20px;
+            border-radius: 12px;
+            line-height: 1.7;
+            display: none;
+            animation: fadeInPop 0.4s ease forwards;
+            font-family: 'Comfortaa', sans-serif;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes fadeInPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        #explanation::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: -10px;
+            width: 8px;
+            height: 8px;
+            background-color: #ffc107;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffc107aa, 0 0 20px #ffc10788;
+        }
+
+        /* --- Control Buttons: Home + Exit --- */
+        #control-buttons {
+            position: fixed;
+            bottom: 5px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        #control-buttons button {
+            background-color: #ffd700;
+            color: #000;
+            font-size: 14px;
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-width: 80px;
+            height: auto;
+            /* ✅ Prevent vertical stretching */
+            flex: 0 0 auto;
+            /* ✅ Prevent flex-grow stretching */
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        #control-buttons button:hover {
+            background-color: #ffcc00;
+            transform: scale(1.05);
+        }
+
+        #control-buttons button:active {
+            transform: scale(0.95);
+        }
+
+        /* ----------- Tablets (max-width: 1024px) ----------- */
+        /* ----------- Tablets (max-width: 1024px) ----------- */
+        @media (max-width: 1024px) {
+
+            body {
+                overflow: hidden;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 20px;
+            }
+
+            h1 {
+                font-size: 34px;
+                margin-top: 120px;
+            }
+
+            h2 {
+                font-size: 0.8em;
+                margin: 8px 0;
+            }
+
+            /* --- Wrap board + pieces side-by-side --- */
+            #game-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 20px;
+                width: 100%;
+                max-width: 800px;
+                margin-top: 10px;
+            }
+
+            /* --- 5x5 grid smaller --- */
+            #board {
+                width: 260px;
+                height: 260px;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 1px;
+            }
+
+            #board img {
+                width: 50px;
+                height: 50px;
+                border: 0.5px solid lightblue;
+                object-fit: cover;
+            }
+
+            /* --- Pieces to the right of board --- */
+            #pieces {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-auto-rows: 1fr;
+                gap: 2px;
+                width: 255px;
+                /* exactly fits 5 images × 50px + gaps */
+                height: auto;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+            }
+
+            #pieces img {
+                width: 50px;
+                height: 50px;
+                border: 0.5px solid lightblue;
+                object-fit: cover;
+            }
+
+            /* --- Timer & Buttons fixed at bottom --- */
+
+            #control-buttons {
+                position: fixed;
+                bottom: 20px;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                gap: 14px;
+            }
+
+            #control-buttons button {
+                padding: 8px 16px;
+                font-size: 15px;
+                border-radius: 8px;
+            }
+
+            /* Question Box smaller */
+            .question-box {
+                width: 90%;
+                padding: 15px;
+            }
+
+            #fact-text {
+                font-size: 14px;
+            }
+        }
+
+        /* ----------- Mobiles (max-width: 491px) ----------- */
+        @media (max-width: 491px) {
+            body {
+                padding-top: 5px;
+                justify-content: flex-start;
+                overflow: hidden;
+            }
+
+            h1 {
+                position: absolute;
+                top: 10px;
+                right: 8px;
+                font-size: 0.6em !important;
+                margin-bottom: 4px;
+            }
+
+            h2 {
+                position: absolute;
+                top: 80px;
+                right: 8px;
+                font-size: 0.8em !important;
+                margin-bottom: 4px;
+            }
+
+            #game-container {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                /* Space between board and pieces */
+                margin-top: 60px;
+                flex-wrap: wrap;
+                /* In case the screen is narrower */
+            }
+
+            #board {
+                width: 220px;
+                height: 220px;
+                gap: 0;
+            }
+
+            #board img {
+                width: 44px;
+                height: 44px;
+            }
+
+            #pieces {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-auto-rows: 1fr;
+                gap: 2px;
+                width: 225px;
+                /* fits 5×44px pieces + small gaps */
+                height: auto;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+            }
+
+            #pieces img {
+                width: 44px;
+                height: 44px;
+                border: 0.5px solid lightblue;
+                object-fit: cover;
+            }
+
+            #control-buttons {
+                bottom: 20px;
+                gap: 8px;
+            }
+
+            #control-buttons button {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            #timer {
+                font-size: 13px;
+            }
+        }
+
+        /* ----------- Mobiles (max-width: 600px) ----------- */
+        @media (max-width: 600px) and (min-width: 490px) {
+            body {
+                padding-top: 5px;
+                justify-content: flex-start;
+                overflow: hidden;
+            }
+
+            h1 {
+                font-size: 34px;
+                margin-top: 120px;
+            }
+
+            h2 {
+                position: absolute;
+                top: 80px;
+                right: 8px;
+                font-size: 1.3em !important;
+                margin-bottom: 4px;
+            }
+
+            #game-container {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                /* Space between board and pieces */
+                margin-top: 60px;
+                flex-wrap: wrap;
+                /* In case the screen is narrower */
+            }
+
+            #board {
+                width: 220px;
+                height: 220px;
+                gap: 0;
+            }
+
+            #board img {
+                width: 44px;
+                height: 44px;
+            }
+
+            #pieces {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-auto-rows: 1fr;
+                gap: 2px;
+                width: 225px;
+                /* fits 5×44px pieces + small gaps */
+                height: auto;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+            }
+
+            #pieces img {
+                width: 44px;
+                height: 44px;
+                border: 0.5px solid lightblue;
+                object-fit: cover;
+            }
+
+            #control-buttons {
+                bottom: 20px;
+                gap: 8px;
+            }
+
+            #control-buttons button {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            #timer {
+                font-size: 13px;
+            }
+
+            /* === Smaller fact text === */
+            #fact-text {
+                font-size: 10px;
+                text-align: center;
+                padding: 4px;
+            }
+
+            /* === Question box optimized === */
+            .question-box {
+                width: 90%;
+                padding: 8px;
+            }
+
+            #options button {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+        }
+
+
+        /* ----------- Mobiles (max-width: 600px) ----------- */
+        @media (max-width: 369px) {
+            body {
+                padding-top: 5px;
+                justify-content: flex-start;
+                overflow: hidden;
+            }
+
+            h1 {
+                font-size: 34px;
+                margin-top: 120px;
+                width: 10%;
+            }
+
+            h2 {
+                position: fixed;
+                bottom: 80px;
+                font-size: 0.8em !important;
+                width: 10%;
+                margin-bottom: 4px;
+            }
+
+            #game-container {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                /* Space between board and pieces */
+                margin-top: 60px;
+                flex-wrap: wrap;
+                /* In case the screen is narrower */
+            }
+
+            #board {
+                width: 220px;
+                height: 220px;
+                gap: 0;
+            }
+
+            #board img {
+                width: 44px;
+                height: 44px;
+            }
+
+            #pieces {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-auto-rows: 1fr;
+                gap: 2px;
+                width: 225px;
+                /* fits 5×44px pieces + small gaps */
+                height: auto;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+            }
+
+            #pieces img {
+                width: 44px;
+                height: 44px;
+                border: 0.5px solid lightblue;
+                object-fit: cover;
+            }
+
+            #control-buttons {
+                bottom: 20px;
+                gap: 8px;
+            }
+
+            #control-buttons button {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            #timer {
+                font-size: 13px;
+            }
+
+            /* === Smaller fact text === */
+            #fact-text {
+                font-size: 10px;
+                text-align: center;
+                padding: 4px;
+            }
+
+            /* === Question box optimized === */
+            .question-box {
+                width: 90%;
+                padding: 8px;
+            }
+
+            #options button {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+        }
+
+        /* --- Landscape Warning for Phones --- */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            body::before {
+                content: "Please rotate your device to portrait mode 📱";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 1);
+                color: #fff;
+                font-size: 1.4rem;
+                font-family: 'Comfortaa', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                z-index: 99999;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+
+    <script>
+        "use strict";
+        !function () {
+            function detectDevTool(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    consoleCheck();
+                }
+            }
+            if (window.attachEvent) {
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    detectDevTool();
+                    window.attachEvent('onresize', detectDevTool);
+                    window.attachEvent('onmousemove', detectDevTool);
+                    window.attachEvent('onfocus', detectDevTool);
+                    window.attachEvent('onblur', detectDevTool);
+                    window.attachEvent('onkeydown', detectDevTool);
+                    window.attachEvent('onkeyup', detectDevTool);
+                    window.attachEvent('oncontextmenu', detectDevTool);
+                    window.attachEvent('onscroll', detectDevTool);
+                    window.attachEvent('onmousedown', detectDevTool);
+                    window.attachEvent('onmouseup', detectDevTool);
+                } else {
+                    setTimeout(arguments.callee, 0);
+                }
+            } else {
+                window.addEventListener('load', detectDevTool);
+                window.addEventListener('resize', detectDevTool);
+                window.addEventListener('mousemove', detectDevTool);
+                window.addEventListener('focus', detectDevTool);
+                window.addEventListener('blur', detectDevTool);
+                window.addEventListener('keydown', detectDevTool);
+                window.addEventListener('keyup', detectDevTool);
+                window.addEventListener('contextmenu', detectDevTool);
+                window.addEventListener('scroll', detectDevTool);
+                window.addEventListener('mousedown', detectDevTool);
+                window.addEventListener('mouseup', detectDevTool);
+            }
+        }();
+
+        // Prevent opening the console using keyboard shortcuts
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "F12" || (e.ctrlKey && (e.key === "u" || e.key === "s" || e.key === "i" || e.key === "c"))) {
+                e.preventDefault();
+            }
+        });
+
+        // Disable right-click context menu
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable copy and paste
+        document.addEventListener("copy", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("paste", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable text selection
+        document.addEventListener("selectstart", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable context menu and certain keyboard shortcuts
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && (e.shiftKey && e.key === 'I'))) {
+                e.preventDefault();
+            }
+        });
+
+        // Disable copy (Ctrl+C), cut (Ctrl+X), and paste (Ctrl+V)
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'x' || e.key === 'v')) {
+            e.preventDefault();
+        }
+
+        (function () {
+            const devtools = /./;
+            let devtoolsOpen = false; // Track if the dev tools are open
+
+            devtools.toString = function () {
+                devtoolsOpen = true; // Set flag to true if dev tools are opened
+                consoleCheck(); // Trigger when dev tools are open
+            };
+
+            setInterval(function () {
+                console.log('%c', devtools);
+                if (devtoolsOpen) {
+                    // Optional: if you want to do something when dev tools are open
+                    consoleCheck();
+                }
+            }, 1000);
+
+            function consoleCheck() {
+                if (devtoolsOpen) {
+                    alert('Please do not use Developer Tools!');
+                    // Optionally, redirect or hide content
+                    document.body.innerHTML = '<h1>Access Denied</h1>';
+                }
+            }
+        })();
+
+        function consoleCheck() {
+            document.querySelector('body').innerHTML = 'We strongly support not using the console for extra actions! Please Refresh the page to Restart';
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="portal-scale">
+        <h1>Hard Mode</h1> <!-- Title added here -->
+        <br>
+        <div id="game-container">
+            <div id="board"></div>
+            <div id="pieces"></div>
+        </div>
+        <h2>Turns: <span id="turns">0</span></h2>
+
+        <!-- Overlay to disable interaction with the board -->
+        <div id="overlay" style="display: none;"></div>
+
+        <!-- Question Section with a background box and Close Button -->
+        <div id="question-section" class="question-box"
+            style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); opacity: 0; transition: all 0.5s ease; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000;">
+            <button id="close-btn"
+                style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 24px; cursor: pointer; color: #333; font-weight: bold; z-index: 1001;">&times;</button>
+            <h3 id="question"></h3>
+            <div id="options"></div>
+            <p id="explanation" style="display: none;"></p>
+        </div>
+
+        <!-- New Fact Box -->
+        <div id="fact-box">
+            <p id="fact-text">Loading fact...</p>
+        </div>
+
+        <div id="timer">00:00</div>
+
+        <div id="control-buttons">
+            <button id="home-btn">🏠 Home</button>
+            <button id="exit-btn">❌ Exit</button>
+        </div>
+    </div>
+
+    <script>
+        var rows = 5;
+        var columns = 5;
+
+        var currTile;
+        var otherTile;
+        var turns = 0;
+        var isGameComplete = false; // Track game completion status
+
+        var folderExplanations = {
+            "images": "This is a polar bear in the Arctic, struggling due to the melting sea ice.",
+            "images2": "This is an endangered penguin colony, affected by changes in the Antarctic ecosystem.",
+            "images3": "This image shows the rapid retreat of glaciers due to climate change.",
+            "images4": "Melting icebergs like this contribute to rising sea levels.",
+            "images5": "Polar bears rely on these icy hunting grounds, which are vanishing due to global warming.",
+            "images6": "A polar bear wanders through a barren landscape, highlighting the devastating impact of climate change on Arctic habitats."
+        };
+
+        const facts = [
+            "Arctic sea ice is declining at a rate of 13% per decade.",
+            "Polar bears are listed as a vulnerable species due to climate change.",
+            "The Arctic is warming twice as fast as the global average.",
+            "Polar bears primarily hunt seals from sea ice platforms.",
+            "Climate change is causing longer ice-free periods in the Arctic.",
+            "Polar bears can swim for long distances, but this uses a lot of energy.",
+            "The Arctic could be ice-free in summer by 2040.",
+            "Polar bears are considered marine mammals because they spend most of their time on sea ice.",
+            "Climate change affects the entire Arctic ecosystem, not just polar bears.",
+            "Reducing carbon emissions is crucial for protecting Arctic habitats.",
+            "Earth's temperature has risen 1.2°C since the 1800s.",
+            "Oceans absorb 90% of heat, raising sea levels.",
+            "The Arctic warms twice as fast, melting ice.",
+            "Deforestation adds 10% of greenhouse gases.",
+            "Extreme weather events are intensifying.",
+            "Renewable energy is key to climate action.",
+            "CO₂ levels are 50% higher than pre-industrial times.",
+            "Climate change could displace 1 billion by 2050.",
+            "Coral reefs face bleaching due to warm seas.",
+            "Melting glaciers raise global sea levels.",
+            "Air pollution and climate change are linked.",
+            "Forests absorb a third of CO₂ emissions.",
+            "Species face extinction as habitats shift.",
+            "Crop yields may drop 30% by 2050.",
+            "The Paris Agreement seeks a 1.5°C cap."
+        ];
+
+        // Function to periodically display random facts in the fact-box
+        function showFacts() {
+            const factTextElement = document.getElementById("fact-text");
+
+            function updateFact() {
+                const randomIndex = Math.floor(Math.random() * facts.length);
+                factTextElement.innerText = facts[randomIndex];
+                // Restart animation
+                factTextElement.style.animation = 'none';
+                void factTextElement.offsetWidth; // Trigger reflow
+                factTextElement.style.animation = 'scrollFacts 15s linear infinite';
+            }
+
+            updateFact();
+            setInterval(updateFact, 15000); // Change fact every 15 seconds
+        }
+
+        // Add this function to check if the puzzle is complete
+        function checkCompletion() {
+            return correctPositions.every(position => position === true); // Ensure all positions are correct
+        }
+
+        // Function to show the original image, explanation, and stars after game completion
+        function showCompletionScreen(selectedFolder) {
+            const starRating = getStarRating(turns, minutes, seconds);
+            const explanation = folderExplanations[selectedFolder];
+            const mode = "hard";
+
+            // Prepare data to send
+            const params = new URLSearchParams({
+                mode: mode,
+                folder: selectedFolder,
+                turns: turns,
+                stars: starRating,
+                explanation: explanation,
+                minutes: minutes,
+                seconds: seconds
+            });
+
+            // ✅ Redirect to completion page in parent folder with data
+            window.location.href = `../completion.html?${params.toString()}`;
+        }
+
+        // Function to calculate star rating based on both moves and timer
+        function getStarRating(turns, minutes, seconds) {
+            // Convert total time into seconds
+            const totalTime = minutes * 60 + seconds;
+
+            // Ideal benchmarks for 3x3 puzzle with question pop-ups
+            const idealMoves = 70;   // 25 correct placements + some retries
+            const idealTime = 600;   // ~10 minutes (since questions slow down play)
+
+            // Calculate relative performance scores (capped at 1.0)
+            const moveScore = Math.min(1, idealMoves / turns);
+            const timeScore = Math.min(1, idealTime / totalTime);
+
+            // Weighted average (moves = 60%, time = 40%)
+            const finalScore = (moveScore * 0.6 + timeScore * 0.4) * 100;
+
+            // Assign stars based on score
+            if (finalScore >= 90) return "⭐⭐⭐⭐⭐"; // Perfect
+            else if (finalScore >= 75) return "⭐⭐⭐⭐"; // Excellent
+            else if (finalScore >= 55) return "⭐⭐⭐";  // Good
+            else if (finalScore >= 35) return "⭐⭐";   // Fair
+            else return "⭐";                          // Needs improvement
+        }
+
+
+        // Function to calculate the star rating based on turns
+        function getStarRating(turns) {
+            if (turns <= 40) {
+                return "⭐⭐⭐⭐⭐";
+            } else if (turns <= 45) {
+                return "⭐⭐⭐⭐";
+            } else if (turns <= 50) {
+                return "⭐⭐⭐";
+            } else if (turns <= 55) {
+                return "⭐⭐";
+            } else {
+                return "⭐";
+            }
+        }
+
+        var questions = [
+            {
+                question: "Why is methane bad for the Earth?",
+                options: ["It causes storms", "It makes the Earth hotter", "It makes rain", "It makes clouds"],
+                correct: 1,
+                explanation: "Methane traps heat and makes the Earth warmer."
+            },
+            {
+                question: "Why do trees help the climate?",
+                options: ["They clean the air and take in carbon dioxide", "They blow cold air", "They trap oxygen", "They grow fruits"],
+                correct: 0,
+                explanation: "Trees take in carbon dioxide and help clean the air."
+            },
+            {
+                question: "What is a carbon footprint?",
+                options: ["The amount of CO₂ someone causes", "A bear track", "Footprints made from coal", "A black shoe print"],
+                correct: 0,
+                explanation: "It shows how much carbon dioxide a person or action adds to the air."
+            },
+            {
+                question: "What is permafrost?",
+                options: ["Ocean waves", "Frozen ground", "Sand", "Hot air"],
+                correct: 1,
+                explanation: "Permafrost is ground that stays frozen all year."
+            },
+            {
+                question: "Why is too much carbon dioxide a problem?",
+                options: ["It makes the sky green", "It cools the Earth", "It traps heat and warms the Earth", "It makes animals glow"],
+                correct: 2,
+                explanation: "Too much CO₂ traps heat and causes global warming."
+            },
+            {
+                question: "What can happen when ice melts into the ocean?",
+                options: ["It becomes colder", "The sea level goes up", "The ocean gets smaller", "The water disappears"],
+                correct: 1,
+                explanation: "Melting ice adds water to the ocean and raises sea levels."
+            },
+            {
+                question: "What is one greenhouse gas?",
+                options: ["Oxygen", "Water", "Carbon dioxide", "Sand"],
+                correct: 2,
+                explanation: "Carbon dioxide is a gas that traps heat and warms the planet."
+            },
+            {
+                question: "What is global warming?",
+                options: ["The Earth getting colder", "Only cities heating", "The Moon heating up", "The Earth getting warmer"],
+                correct: 3,
+                explanation: "Global warming means the Earth is getting hotter over time."
+            },
+            {
+                question: "Why is the Arctic warming faster than other places?",
+                options: ["It has no trees", "Melting ice makes it warmer", "More sunlight", "Animals there are warmer"],
+                correct: 1,
+                explanation: "Ice reflects sunlight. When it melts, more heat stays in the Arctic."
+            },
+            {
+                question: "How can we help stop global warming?",
+                options: ["Use more gas", "Turn off lights when not using them", "Leave the fan on", "Cut more trees"],
+                correct: 1,
+                explanation: "Turning off lights saves energy and helps the Earth."
+            },
+            {
+                question: "What is sea ice?",
+                options: ["Ice cream in the sea", "Cold clouds", "A fish", "Frozen ocean water"],
+                correct: 3,
+                explanation: "Sea ice is frozen water that floats on the ocean in cold places."
+            },
+            {
+                question: "What is recycling good for?",
+                options: ["Helping animals", "Saving energy and reducing waste", "Making more trash", "Melting ice"],
+                correct: 1,
+                explanation: "Recycling helps keep trash out of landfills and saves energy."
+            },
+            {
+                question: "What happens to animals when the ice melts?",
+                options: ["They freeze", "They grow wings", "They become plants", "They move or lose homes"],
+                correct: 3,
+                explanation: "Animals like polar bears lose hunting grounds when the ice melts."
+            },
+            {
+                question: "What is a climate change 'tipping point'?",
+                options: ["A snow hill", "A big change that can’t be undone", "A type of ice cream", "A place to rest"],
+                correct: 1,
+                explanation: "A tipping point is when Earth changes in a big way and can’t go back easily."
+            },
+            {
+                question: "What is a greenhouse gas?",
+                options: ["A gas that keeps heat close to Earth", "A gas from green leaves", "A balloon", "Air from flowers"],
+                correct: 0,
+                explanation: "Greenhouse gases trap heat in Earth's air."
+            },
+            {
+                question: "What can you do to help the Earth?",
+                options: ["Leave water running", "Use less plastic", "Drive short trips", "Keep lights on all day"],
+                correct: 1,
+                explanation: "Using less plastic helps keep the Earth clean."
+            },
+            {
+                question: "Why is it bad when sea levels rise?",
+                options: ["It brings more snow", "It floods cities", "It grows more trees", "More fish swim"],
+                correct: 1,
+                explanation: "Higher sea levels can flood homes near the coast."
+            },
+            {
+                question: "What happens when frozen ground (permafrost) melts?",
+                options: ["It releases gases into the air", "The ground gets higher", "It makes more ice", "Animals appear"],
+                correct: 0,
+                explanation: "Melting permafrost lets out gases like carbon dioxide and methane."
+            },
+            {
+                question: "Which of these helps reduce pollution?",
+                options: ["Burning leaves", "Driving everywhere", "Walking or biking", "Using more plastic"],
+                correct: 2,
+                explanation: "Walking or biking helps keep the air clean."
+            },
+            {
+                question: "What is the main reason the Earth is getting warmer?",
+                options: ["More sunlight", "More clouds", "More greenhouse gases", "Too much water"],
+                correct: 2,
+                explanation: "Greenhouse gases like carbon dioxide trap heat in Earth's air."
+            }
+        ];
+
+
+        function getRandomImageFolder() {
+            const folders = ["images", "images2", "images3", "images4", "images5", "images6"];
+            const randomIndex = Math.floor(Math.random() * folders.length);
+            return folders[randomIndex];
+        }
+        var selectedFolder;
+
+        // For tracking correct placement of pieces
+        var correctPositions = Array(rows * columns).fill(false);
+
+        // Initialize timer variables
+        let seconds = 0;
+        let minutes = 0;
+
+        // Timer update function
+        function updateTimer() {
+            seconds++;
+            if (seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = formattedTime;
+        }
+
+        // Start the timer with a 1-second interval
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Function to stop the timer when the puzzle is completed (add your completion check logic)
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        window.onload = function () {
+            selectedFolder = getRandomImageFolder();
+
+            // Initialize the 5x5 board
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < columns; c++) {
+                    let tile = document.createElement("img");
+                    tile.src = `./${selectedFolder}/blank2.jpg`;  // Correct folder for blank image
+                    tile.id = `board-tile-${r}-${c}`;
+
+                    // Drag functionality
+                    tile.addEventListener("dragstart", dragStart);
+                    tile.addEventListener("dragover", dragOver);
+                    tile.addEventListener("dragenter", dragEnter);
+                    tile.addEventListener("dragleave", dragLeave);
+                    tile.addEventListener("drop", dragDrop);
+                    tile.addEventListener("dragend", dragEnd);
+
+                    // ✅ Touch events for mobile
+                    tile.addEventListener("touchstart", touchStart, { passive: false });
+                    tile.addEventListener("touchmove", touchMove, { passive: false });
+                    tile.addEventListener("touchend", touchEnd, { passive: false });
+
+                    document.getElementById("board").append(tile);
+                }
+            }
+
+            // Pieces array
+            let pieces = [];
+            for (let i = 1; i <= rows * columns; i++) {
+                pieces.push(i.toString()); // Put "1" to "25" into the array (puzzle image names)
+            }
+            pieces.reverse();
+
+            // Shuffle the pieces
+            for (let i = 0; i < pieces.length; i++) {
+                let j = Math.floor(Math.random() * pieces.length);
+                [pieces[i], pieces[j]] = [pieces[j], pieces[i]]; // Swap pieces
+            }
+
+            // Append shuffled pieces from the correct folder
+            for (let i = 0; i < pieces.length; i++) {
+                let tile = document.createElement("img");
+                tile.src = `./${selectedFolder}/${pieces[i]}.jpg`;  // Use selected folder for image path
+
+                // Error handling for missing images
+                tile.onerror = function () {
+                    console.error(`Failed to load image: ${tile.src}`);  // Log if image fails to load
+                };
+
+
+
+                tile.dataset.pieceNumber = pieces[i];
+
+                // Drag functionality
+                tile.addEventListener("dragstart", dragStart);
+                tile.addEventListener("dragover", dragOver);
+                tile.addEventListener("dragenter", dragEnter);
+                tile.addEventListener("dragleave", dragLeave);
+                tile.addEventListener("drop", dragDrop);
+                tile.addEventListener("dragend", dragEnd);
+
+                // ✅ Touch events for mobile
+                tile.addEventListener("touchstart", touchStart, { passive: false });
+                tile.addEventListener("touchmove", touchMove, { passive: false });
+                tile.addEventListener("touchend", touchEnd, { passive: false });
+
+                document.getElementById("pieces").append(tile);
+            }
+
+            // Start displaying facts
+            showFacts();
+        }
+
+
+        // Keep track of used question indices
+        let usedQuestionIndices = [];
+
+        // Function to get a random question without repetition
+        function getRandomQuestionIndex() {
+            // If all questions have been used, reset the list
+            if (usedQuestionIndices.length === questions.length) {
+                usedQuestionIndices = [];
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            } while (usedQuestionIndices.includes(randomIndex));
+
+            usedQuestionIndices.push(randomIndex);
+            return randomIndex;
+        }
+
+        let touchStartTile = null;
+
+        function touchStart(e) {
+            const target = e.target;
+            if (target.dataset.locked === "true") return;
+            touchStartTile = target;
+            currTile = target;
+            e.preventDefault();
+        }
+
+        function touchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element && element.tagName === "IMG" && element !== touchStartTile) {
+                otherTile = element;
+            }
+        }
+
+        function touchEnd() {
+            if (!touchStartTile || !otherTile) {
+                touchStartTile = null;
+                otherTile = null;
+                currTile = null;
+                return;
+            }
+
+            if (!currTile || !otherTile) return;
+            if (currTile.src.includes("blank")) return;
+
+            let currImg = currTile.src;
+            let otherImg = otherTile.src;
+
+            // ✅ Only allow placement if dropped on the puzzle board
+            const droppedOnBoard = otherTile.parentElement.id === "board";
+
+            if (droppedOnBoard && isCorrectPosition(otherTile, currTile)) {
+                // Swap images
+                currTile.src = otherImg;
+                otherTile.src = currImg;
+
+                // Mark the correct position and lock the tile
+                const index = Array.prototype.indexOf.call(otherTile.parentNode.children, otherTile);
+                correctPositions[index] = true;
+
+                currTile.dataset.locked = "true";
+                otherTile.dataset.locked = "true";
+
+                // Play placement sound
+                placementSound.play();
+
+                // Update turn count
+                turns += 1;
+                document.getElementById("turns").innerText = turns;
+
+                // Temporarily disable all tiles
+                const tiles = document.querySelectorAll("#board img, #pieces img");
+                tiles.forEach(tile => tile.style.pointerEvents = "none");
+
+                // Show a random question after delay
+                const pieceIndex = getRandomQuestionIndex();
+                setTimeout(() => {
+                    showQuestion(pieceIndex);
+                    tiles.forEach(tile => tile.style.pointerEvents = "auto");
+                }, 1500);
+
+            } else {
+                // ❌ Invalid placement (either not on board or incorrect)
+                turns += 1;
+                document.getElementById("turns").innerText = turns;
+
+                // Reset the piece image
+                currTile.src = `./${selectedFolder}/${currTile.dataset.pieceNumber}.jpg`;
+            }
+
+            // ✅ Check for completion
+            if (checkCompletion() && !isGameComplete) {
+                stopTimer();
+                isGameComplete = true;
+                showCompletionScreen(selectedFolder);
+            }
+
+            // 🔁 Reset references
+            touchStartTile = null;
+            otherTile = null;
+            currTile = null;
+        }
+
+
+        // Dragging functions
+        function dragStart() {
+            if (this.dataset.locked === "true") {
+                return; // Prevent dragging if the tile is locked
+            }
+            currTile = this;
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function dragEnter(e) {
+            e.preventDefault();
+        }
+
+        function dragLeave() { }
+
+        function dragDrop() {
+            otherTile = this;
+        }
+
+        // Preload the placement sound
+        const placementSound = new Audio('./src_assets_puzzle.wav');
+
+        // Update the dragEnd function to check for game completion
+        function dragEnd() {
+            if (!otherTile || currTile.src.includes("blank")) return;
+
+            let currImg = currTile.src;
+            let otherImg = otherTile.src;
+
+            // ✅ Only allow placement when dropped on the puzzle board
+            const droppedOnBoard = otherTile.parentElement.id === "board";
+
+            if (droppedOnBoard && isCorrectPosition(otherTile, currTile)) {
+                // Swap images if valid
+                currTile.src = otherImg;
+                otherTile.src = currImg;
+
+                // Mark the correct position and lock the tile
+                let index = Array.prototype.indexOf.call(otherTile.parentNode.children, otherTile);
+                correctPositions[index] = true;
+
+                // Lock both tiles to prevent further moves
+                currTile.dataset.locked = "true";
+                otherTile.dataset.locked = "true";
+
+                // Play placement sound
+                placementSound.play();
+
+                // Increment turns
+                turns += 1;
+                document.getElementById("turns").innerText = turns;
+
+                // Temporarily disable all tiles
+                const tiles = document.querySelectorAll("#board img, #pieces img");
+                tiles.forEach(tile => tile.style.pointerEvents = "none");
+
+                // Show a random question after 1.5s delay
+                let pieceIndex = getRandomQuestionIndex();
+                setTimeout(() => {
+                    showQuestion(pieceIndex);
+
+                    // Re-enable all tiles
+                    tiles.forEach(tile => tile.style.pointerEvents = "auto");
+                }, 1500);
+
+            } else {
+                // ❌ Invalid placement (either not on board or incorrect)
+                turns += 1;
+                document.getElementById("turns").innerText = turns;
+
+                // Reset the tile image (move back to pieces tray)
+                currTile.src = `./${selectedFolder}/${currTile.dataset.pieceNumber}.jpg`;
+            }
+
+            // ✅ Check for game completion after every valid move
+            if (checkCompletion() && !isGameComplete) {
+                stopTimer();
+                isGameComplete = true;
+                showCompletionScreen(selectedFolder);
+            }
+
+            // Reset drag references
+            currTile = null;
+            otherTile = null;
+        }
+
+
+        function isCorrectPosition(tile, draggedTile) {
+            let tilePosition = Array.prototype.indexOf.call(tile.parentNode.children, tile);
+            let draggedPosition = parseInt(draggedTile.dataset.pieceNumber) - 1; // Get the correct position from data attribute
+
+            // Check if the position of the dragged tile matches the expected position
+            return tilePosition === draggedPosition;
+        }
+
+        function isCorrectPosition(tile, draggedTile) {
+            let tilePosition = Array.prototype.indexOf.call(tile.parentNode.children, tile);
+            let draggedPosition = parseInt(draggedTile.dataset.pieceNumber) - 1; // Get the correct position from data attribute
+
+            // Check if the position of the dragged tile matches the expected position
+            return tilePosition === draggedPosition;
+        }
+
+        function showQuestion(index) {
+            let question = questions[index];
+            let attemptsLeft = 3;
+            let answeredCorrectly = false;
+
+            const overlay = document.getElementById("overlay");
+            const questionSection = document.getElementById("question-section");
+            const closeBtn = document.getElementById("close-btn");
+            const explanationBox = document.getElementById("explanation");
+            const optionsDiv = document.getElementById("options");
+
+            overlay.style.display = "block";
+            questionSection.style.display = "block";
+            closeBtn.style.display = "none";
+            explanationBox.style.display = "none";
+
+            // Smooth fade-in
+            setTimeout(() => {
+                overlay.style.opacity = 1;
+                questionSection.style.transform = "translate(-50%, -50%) scale(1)";
+                questionSection.style.opacity = 1;
+            }, 50);
+
+            document.getElementById("question").innerText = question.question;
+            optionsDiv.innerHTML = '';
+
+            question.options.forEach((option, i) => {
+                let button = document.createElement("button");
+                button.innerText = option;
+                button.style.fontFamily = "Comfortaa";
+
+                button.onclick = function () {
+                    if (attemptsLeft <= 0 || answeredCorrectly) return;
+
+                    attemptsLeft--;
+
+                    if (i === question.correct) {
+                        answeredCorrectly = true;
+
+                        button.style.backgroundColor = "#88E788";
+                        button.style.color = "black";
+
+                        Array.from(optionsDiv.children).forEach(child => {
+                            child.disabled = true;
+                            if (child !== button) child.style.display = "none";
+                        });
+
+                        explanationBox.innerHTML = `
+                    <strong>✅ Great job! You're making a difference for the planet! 🌍💚</strong><br><br>
+                    ${question.explanation}
+                `;
+                        explanationBox.style.display = "block";
+                        closeBtn.style.display = "block";
+
+                    } else {
+                        button.style.backgroundColor = "red";
+                        button.style.color = "white";
+                        button.disabled = true;
+
+                        if (attemptsLeft === 0) {
+                            Array.from(optionsDiv.children).forEach(child => {
+                                child.disabled = true;
+                                if (child !== optionsDiv.children[question.correct]) {
+                                    child.style.display = "none";
+                                } else {
+                                    child.style.backgroundColor = "#88E788";
+                                    child.style.color = "black";
+                                }
+                            });
+
+                            explanationBox.innerHTML = `
+                        <strong>❌ You got all attempts wrong 😢</strong><br><br>
+                        ${question.explanation}
+                    `;
+                            explanationBox.style.display = "block";
+                            closeBtn.style.display = "block";
+                        }
+                    }
+                };
+
+                optionsDiv.appendChild(button);
+            });
+        }
+
+
+        // ✅ Close button functionality (keep this outside showQuestion)
+        document.getElementById("close-btn").onclick = function () {
+            const overlay = document.getElementById("overlay");
+            const questionSection = document.getElementById("question-section");
+
+            overlay.style.opacity = 0;
+            questionSection.style.transform = "translate(-50%, -50%) scale(0.8)";
+            questionSection.style.opacity = 0;
+
+            setTimeout(() => {
+                overlay.style.display = "none";
+                questionSection.style.display = "none";
+                document.getElementById("explanation").style.display = "none";
+
+                // ✅ Hide the close button again
+                document.getElementById("close-btn").style.display = "none";
+            }, 500);
+        };
+
+
+        document.getElementById("home-btn").onclick = () => {
+            window.location.href = "../start.html";
+        };
+
+        document.getElementById("exit-btn").onclick = () => {
+
+            // If this doesn’t work in some browsers, you can also redirect to a "Thank you" page:
+            window.location.href = "../exit.html";
+        }; 
+    </script>
+</body>
+
+</html>

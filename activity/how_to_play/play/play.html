@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Level Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="logo/android-chrome-512x512.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comfortaa', sans-serif;
+            background-color: #000;
+            color: #e0e0e0;
+        }
+
+        body {
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(40, 40, 40, 0.8), rgba(0, 0, 0, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path d="M30,10 Q50,0 70,10 L90,30 Q100,50 90,70 L70,90 Q50,100 30,90 L10,70 Q0,50 10,30 Z" fill="rgba(60,60,60,0.3)"/></svg>');
+            background-size: cover, 100px 100px;
+            background-repeat: no-repeat, repeat;
+            animation: backgroundShift 30s linear infinite;
+        }
+
+        @keyframes backgroundShift {
+            from {
+                background-position: center, 0 0;
+            }
+
+            to {
+                background-position: center, 100px 100px;
+            }
+        }
+
+        /* ✅ SCALE LAYER (PORTAL FIX) */
+        .frame-scale {
+            transform: scale(0.9);
+            transform-origin: top center;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .frame-scale {
+                transform: scale(1);
+            }
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 4vw, 3rem);
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .selection {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            background: #4A90E2;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #357ABD;
+            transform: translateY(-4px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* Responsive Styles */
+
+        /* Laptops */
+        @media (max-width: 1200px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .btn {
+                padding: 14px 35px;
+                font-size: 17px;
+            }
+        }
+
+        /* Tablets */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+                margin-bottom: 30px;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+
+            .selection {
+                gap: 15px;
+            }
+        }
+
+        /* Mobile Phones */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+
+            .btn {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+
+            .selection {
+                flex-direction: column;
+                /* Stack buttons vertically */
+                gap: 10px;
+            }
+        }
+
+        /* --- Landscape Warning for Phones --- */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            body::before {
+                content: "Please rotate your device to portrait mode 📱";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 1);
+                color: #fff;
+                font-size: 1.4rem;
+                font-family: 'Comfortaa', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                z-index: 99999;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+
+    <script>
+        "use strict";
+        !function () {
+            function detectDevTool(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    consoleCheck();
+                }
+            }
+            if (window.attachEvent) {
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    detectDevTool();
+                    window.attachEvent('onresize', detectDevTool);
+                    window.attachEvent('onmousemove', detectDevTool);
+                    window.attachEvent('onfocus', detectDevTool);
+                    window.attachEvent('onblur', detectDevTool);
+                    window.attachEvent('onkeydown', detectDevTool);
+                    window.attachEvent('onkeyup', detectDevTool);
+                    window.attachEvent('oncontextmenu', detectDevTool);
+                    window.attachEvent('onscroll', detectDevTool);
+                    window.attachEvent('onmousedown', detectDevTool);
+                    window.attachEvent('onmouseup', detectDevTool);
+                } else {
+                    setTimeout(arguments.callee, 0);
+                }
+            } else {
+                window.addEventListener('load', detectDevTool);
+                window.addEventListener('resize', detectDevTool);
+                window.addEventListener('mousemove', detectDevTool);
+                window.addEventListener('focus', detectDevTool);
+                window.addEventListener('blur', detectDevTool);
+                window.addEventListener('keydown', detectDevTool);
+                window.addEventListener('keyup', detectDevTool);
+                window.addEventListener('contextmenu', detectDevTool);
+                window.addEventListener('scroll', detectDevTool);
+                window.addEventListener('mousedown', detectDevTool);
+                window.addEventListener('mouseup', detectDevTool);
+            }
+        }();
+
+        // Prevent opening the console using keyboard shortcuts
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "F12" || (e.ctrlKey && (e.key === "u" || e.key === "s" || e.key === "i" || e.key === "c"))) {
+                e.preventDefault();
+            }
+        });
+
+        // Disable right-click context menu
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable copy and paste
+        document.addEventListener("copy", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("paste", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable text selection
+        document.addEventListener("selectstart", function (e) {
+            e.preventDefault();
+        });
+
+        // Disable context menu and certain keyboard shortcuts
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && (e.shiftKey && e.key === 'I'))) {
+                e.preventDefault();
+            }
+        });
+
+        // Disable copy (Ctrl+C), cut (Ctrl+X), and paste (Ctrl+V)
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'x' || e.key === 'v')) {
+            e.preventDefault();
+        }
+
+        (function () {
+            const devtools = /./;
+            let devtoolsOpen = false; // Track if the dev tools are open
+
+            devtools.toString = function () {
+                devtoolsOpen = true; // Set flag to true if dev tools are opened
+                consoleCheck(); // Trigger when dev tools are open
+            };
+
+            setInterval(function () {
+                console.log('%c', devtools);
+                if (devtoolsOpen) {
+                    // Optional: if you want to do something when dev tools are open
+                    consoleCheck();
+                }
+            }, 1000);
+
+            function consoleCheck() {
+                if (devtoolsOpen) {
+                    alert('Please do not use Developer Tools!');
+                    // Optionally, redirect or hide content
+                    document.body.innerHTML = '<h1>Access Denied</h1>';
+                }
+            }
+        })();
+
+        function consoleCheck() {
+            document.querySelector('body').innerHTML = 'We strongly support not using the console for extra actions! Please Refresh the page to Restart';
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Select Difficulty</h1>
+        <div class="selection">
+            <button onclick="window.location.href='easy/index.html'" class="btn">Easy</button>
+            <button onclick="window.location.href='medium/index.html'" class="btn">Medium</button>
+            <button onclick="window.location.href='hard/index.html'" class="btn">Hard</button>
+        </div>
+    </div>
+</body>
+
+</html>

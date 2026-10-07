@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exit Screen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo/android-chrome-192x192.png">
+    <link rel="manifest" href="/logo/site.webmanifest">
+
+    <style>
+        /* === Aurora Gradient Background === */
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #1b2735, #090a0f, #1e3c72, #2a5298);
+            background-size: 400% 400%;
+            animation: gradientShift 14s ease infinite;
+            font-family: 'Comfortaa', sans-serif;
+            color: #fff;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* === Title === */
+        h1 {
+            font-size: 2.6rem;
+            text-shadow: 0 0 20px rgba(0, 180, 255, 0.8);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            animation: fadeIn 2s ease;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: #d0f0ff;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            animation: fadeIn 2.5s ease;
+        }
+
+        /* === Image === */
+        img {
+            width: 70%;
+            max-width: 750px;
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(0, 180, 255, 0.4);
+            animation: float 4s ease-in-out infinite, fadeIn 3s ease;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* === Button === */
+        button {
+            margin-top: 35px;
+            padding: 14px 50px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #00bfff;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00bfff;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        button:hover {
+            background: #00bfff;
+            color: #000;
+            transform: scale(1.08);
+            box-shadow: 0 0 40px #00bfff;
+        }
+
+        /* === Responsive Adjustments === */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            img {
+                width: 85%;
+            }
+
+            button {
+                font-size: 18px;
+                padding: 12px 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            img {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* --- Landscape Warning for Phones --- */
+        @media screen and (orientation: landscape) and (max-width: 1024px) {
+            body::before {
+                content: "Please rotate your device to portrait mode 📱";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 1);
+                color: #fff;
+                font-size: 1.4rem;
+                font-family: 'Comfortaa', sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                z-index: 99999;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+
+    <script>
+        "use strict";
+        !function () {
+            function detectDevTool(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    consoleCheck();
+                }
+            }
+            window.addEventListener('load', detectDevTool);
+            ['resize', 'mousemove', 'focus', 'blur', 'keydown', 'contextmenu', 'scroll', 'mousedown', 'mouseup']
+                .forEach(evt => window.addEventListener(evt, detectDevTool));
+        }();
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "F12" || (e.ctrlKey && (e.key === "u" || e.key === "s" || e.key === "i" || e.key === "c"))) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("copy", e => e.preventDefault());
+        document.addEventListener("paste", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        function consoleCheck() {
+            document.body.innerHTML =
+                '<div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#000;color:#00bfff;text-align:center;"><h1>⚠️ Access Denied</h1><p>Please refresh to continue without using Developer Tools.</p></div>';
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Thank You for Playing!</h1>
+    <h2>Snowbound: Rebuild Their World</h2>
+    <img src="assets/Back.jpg" alt="Exit Image">
+    <button onclick="startGame()">Play Again</button>
+
+    <script> function startGame() { window.location.href = "../../welcome.html"; } </script>
+</body>
+
+</html>
