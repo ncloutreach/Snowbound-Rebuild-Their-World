@@ -90,7 +90,7 @@
         }
 
         #how-to-play-btn {
-            background: url('./activity/assets/How_to_play.png') no-repeat center center;
+            background: url('assets/How_to_play.png') no-repeat center center;
             background-size: contain;
             width: 316px;
             height: 101px;
@@ -255,7 +255,7 @@
         }
 
         function startGame() {
-            window.location.href = "../../../welcome.html";
+            window.location.href = "../index.html";
         }
     </script>
 
@@ -274,11 +274,11 @@
     <script>
         // Redirecting to different HTML pages when buttons are clicked
         document.getElementById('play-btn').addEventListener('click', function () {
-            window.location.href = 'how_to_play/play/start.html'; // Link to the play.html inside the 'play' folder
+            window.location.href = './activity/how_to_play/start.html'; // Link to the play.html inside the 'play' folder
         });
 
         document.getElementById('how-to-play-btn').addEventListener('click', function () {
-            window.location.href = 'how_to_play/how-to-play.html'; // Link to the how-to-play.html inside the 'how_to_play' folder
+            window.location.href = './activity/how_to_play/how_to_play.html'; // Link to the how-to-play.html inside the 'how_to_play' folder
         });
 
     </script>
